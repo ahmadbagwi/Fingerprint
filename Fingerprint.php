@@ -5,11 +5,11 @@ use ZKLibrary;
 class Fingerprint {
 	public function __construct ()
     {
-        $this->ipmesin = '10.10.120.80';
-        $this->portmesin = '4370';
+        $this->ipmesin = getenv('IP');
+        $this->portmesin = getenv('PORT');
     }
 
-    public function test_absen()
+    public function all_attendance ()
     {
         $zk = new ZKLibrary($this->ipmesin, $this->portmesin);
         $zk->connect();

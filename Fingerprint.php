@@ -1,15 +1,15 @@
 <?php
 
-use ZKLibrary;
+require('ZKLibrary.php');
 
 class Fingerprint {
-	public function __construct ()
+	function __construct ()
     {
         $this->ipmesin = getenv('IP');
         $this->portmesin = getenv('PORT');
     }
 
-    public function all_attendance ()
+    function all_attendance ()
     {
         $zk = new ZKLibrary($this->ipmesin, $this->portmesin);
         $zk->connect();

@@ -1,0 +1,1 @@
+###Simple PHP script to get attendance data from fingerprint machine and sent it to server

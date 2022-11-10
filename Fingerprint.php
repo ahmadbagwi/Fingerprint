@@ -52,7 +52,7 @@ class Fingerprint {
 
         foreach ($all_attendance as $all_data) {
             $time = explode(" ", $all_data[3]);
-            $status = $time[1] <= $late ? 'tepat' : 'terlambat';
+            $status = strtotime($time[1]) <= strtotime($late) ? 'tepat' : 'terlambat';
             // get today only
             if ($time[0] == $date) {
                 // push all today data to today_attendance

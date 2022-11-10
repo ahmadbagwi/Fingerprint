@@ -14,7 +14,7 @@ class Fingerprint {
         $this->ip = $_ENV['IP'];
         $this->port = $_ENV['PORT'];
         $this->base_url = $_ENV['BASE_URL'];
-        $this->late = $this->http_request($this->base_url.'/'.'api/fingerprint/terlambat';
+        // $this->late = $this->http_request($this->base_url.'/'.'api/fingerprint/terlambat';
     }
 
     function test () {
@@ -47,11 +47,12 @@ class Fingerprint {
     {
         $all_attendance = $this->all_attendance();
         $today_attendance = [];
+        $late = $this->http_request($this->base_url.'/'.'api/fingerprint/terlambat');
         $status = '';
 
         foreach ($all_attendance as $all_data) {
             $time = explode(" ", $all_data[3]);
-            $status = $time[1] <= $this->late ? 'tepat' : 'terlambat';
+            $status = $time[1] <= $late ? 'tepat' : 'terlambat';
             // get today only
             if ($time[0] == $date) {
                 // push all today data to today_attendance

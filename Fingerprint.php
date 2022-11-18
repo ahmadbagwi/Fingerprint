@@ -1,5 +1,11 @@
 <?php
-
+/*
+PHP file for store and update attendance fingerprint machine
+Run this file with cron and PHP CLI command
+Ex php -r 'require("Fingerprint.php"); $f = new Fingerprint(); $test = $f->today_attendance("2022-11-09"); print_r($test);'
+By Ahmad Bagwi Rifai
+Email ahmadbagwi.id@gmail.com
+*/
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -30,6 +36,20 @@ class Fingerprint {
         $output = curl_exec($ch);
         curl_close($ch);
         return $output;
+    }
+
+    function http_post($url, $data, $username, $password){
+        $data_submit = json_decode($data);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_submit);
+        curl_setopt($ch, CURLOPT_USERPWD, $username.":".$password);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return $response;
     }
 
     function all_attendance ()
@@ -88,5 +108,15 @@ class Fingerprint {
         $temp = array_unique(array_column($today_attendance_compare, 'id_mesin'));
         $today_attendance_fix = array_intersect_key($today_attendance_compare, $temp);
         return $today_attendance_fix;
+    }
+
+    function store_attendance ($date)
+    {
+        $url = $this->http_request($this->base_url.'/'.'api/fingerprint/attendance/store');
+        $data = $this->today_attendance($date);
+        $username = $_ENV['USERNAME'];
+        $password = $_ENV['PASSWORD'];
+        $submit = $this->http_post($url, $data, $username, $password);
+        return $submit;
     }
 }

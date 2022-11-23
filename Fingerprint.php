@@ -39,10 +39,10 @@ class Fingerprint {
         return $output;
     }
 
-    function http_post($url, $data){
+    function http_post($url, $postdata){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
         // curl_setopt($ch, CURLOPT_USERPWD, $username.":".$password);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

@@ -30,7 +30,7 @@ class Fingerprint {
         return json_encode($test);
     }
 
-    function http_request($url){
+    function http_request($url) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -52,6 +52,17 @@ class Fingerprint {
         return $response;
     }
 
+    function find_user ($users, $id)
+    {
+        $user_id = null;
+        foreach ($users as $user) {
+            if ($user->user_id == $id) {
+                $user_id = $user->user_id;
+            }
+        }
+        return $user_id;
+    }
+
     function all_attendance ($ip)
     {
         $zk = new ZKLibrary($ip, $this->port);
@@ -59,7 +70,7 @@ class Fingerprint {
         $zk->disableDevice();
         $get_attendance = $zk->getAttendance();
         $zk->enableDevice();
-        $zk->disconnect(); 
+        $zk->disconnect();
 		return $get_attendance;
     }
 
@@ -69,6 +80,7 @@ class Fingerprint {
         $today_attendance = [];
         $late = $this->http_request($this->base_url.'/'.'api/fingerprint/terlambat');
         $status = '';
+        $today_attendance_database = $this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date);
 
         foreach ($all_attendance as $all_data) {
             $time = explode(" ", $all_data[3]);
@@ -77,7 +89,7 @@ class Fingerprint {
             if ($time[0] == $date) {
                 // push all today data to today_attendance
                 array_push($today_attendance, [
-                    'user_id' => $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
+                    'user_id' => $this->find_user($today_attendance_database, $all_data[1]), // http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
                     'id_mesin' => $all_data[1],
                     'tanggal' => $time[0],
                     'datang' => $time[1],
@@ -89,7 +101,8 @@ class Fingerprint {
 
         // get today data from database
         // check if data already in database
-        $today_attendance_database = json_encode($this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date));
+        // $today_attendance_database = json_encode($this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date));
+
         $today_attendance_compare = [];
 
         foreach ($today_attendance as $all_today) {

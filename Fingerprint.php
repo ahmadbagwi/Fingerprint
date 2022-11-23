@@ -20,7 +20,7 @@ class Fingerprint {
         $this->ip = $_ENV['IP'];
         $this->ip2 = $_ENV['IP2'];
         $this->port = $_ENV['PORT'];
-        $this->base_url = $_ENV['BASE_URL'];
+        $this->base_url = $_ENV['FURL'];
         // $this->late = $this->http_request($this->base_url.'/'.'api/fingerprint/terlambat';
     }
 
@@ -39,15 +39,14 @@ class Fingerprint {
         return $output;
     }
 
-    function http_post($url, $data, $username, $password){
-        $data_submit = json_decode($data);
+    function http_post($url, $data){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_submit);
-        curl_setopt($ch, CURLOPT_USERPWD, $username.":".$password);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        // curl_setopt($ch, CURLOPT_USERPWD, $username.":".$password);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         $response = curl_exec($ch);
         curl_close($ch);
         return $response;
@@ -158,19 +157,21 @@ class Fingerprint {
     {
         $url = $this->http_request($this->base_url.'/'.'api/fingerprint/attendance/store');
         $data = $this->today_attendance($date, $ip);
-        $username = $_ENV['USERNAME'];
-        $password = $_ENV['PASSWORD'];
-        $submit = $this->http_post($url, $data, $username, $password);
+        $username = $_ENV['FUSERNAME'];
+        $password = $_ENV['FPASSWORD'];
+        $postdata = json_encode(['data' => $data, 'username' => $username, 'password' => $password]);
+        $submit = $this->http_post($url, $postdata);
         return $submit;
     }
 
     function update_attendance ($date, $ip)
     {
-        $url = $this->http_request($this->base_url.'/'.'api/fingerprint/attendance/update');
+        $url = $this->base_url.'/'.'api/fingerprint/attendance/update';
         $data = $this->today_update_attendance($date, $ip);
-        $username = $_ENV['USERNAME'];
-        $password = $_ENV['PASSWORD'];
-        $submit = $this->http_post($url, $data, $username, $password);
+        $username = $_ENV['FUSERNAME'];
+        $password = $_ENV['FPASSWORD'];
+        $postdata = json_encode(['data' => $data, 'username' => $username, 'password' => $password]);
+        $submit = $this->http_post($url, $postdata);
         return $submit;
     }
 }

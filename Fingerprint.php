@@ -127,6 +127,7 @@ class Fingerprint {
     {
         $all_attendance = $this->all_attendance($ip);
         $today_update_attendance = [];
+        $today_attendance_database = $this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date);
 
         foreach ($all_attendance as $all_data) {
             $time = explode(" ", $all_data[3]);
@@ -134,7 +135,7 @@ class Fingerprint {
             if ($time[0] == $date) {
                 // push all today data to today_attendance
                 array_push($today_update_attendance, [
-                    'user_id' => $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
+                    'user_id' => $this->find_user($today_attendance_database, $all_data[1]), // $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
                     'id_mesin' => $all_data[1],
                     'tanggal' => $time[0],
                     'pulang' => $time[1]
@@ -144,7 +145,7 @@ class Fingerprint {
 
         // get today data from database
         // get only data already in database to update 
-        $today_attendance_database = json_encode($this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date));
+        // $today_attendance_database = json_encode($this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date));
         $today_attendance_compare = [];
 
         foreach (array_reverse($today_update_attendance) as $all_today) {

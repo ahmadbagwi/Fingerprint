@@ -55,7 +55,7 @@ class Fingerprint {
     function find_user ($users, $id)
     {
         $user_id = null;
-        foreach ($users as $user) {
+        foreach (json_decode($users) as $user) {
             if ($user->user_id == $id) {
                 $user_id = $user->user_id;
             }
@@ -107,7 +107,7 @@ class Fingerprint {
 
         foreach ($today_attendance as $all_today) {
             $exist = false;
-            foreach ($today_attendance_database as $all_database) {
+            foreach (json_decode($today_attendance_database) as $all_database) {
                 if ($all_today['id_mesin'] == $all_database['id_mesin']
                     && $all_today['tanggal'] == $all_database['tanggal']){
                     $exist = true;
@@ -135,7 +135,7 @@ class Fingerprint {
             if ($time[0] == $date) {
                 // push all today data to today_attendance
                 array_push($today_update_attendance, [
-                    'user_id' => $this->find_user($today_attendance_database, $all_data[1]), // $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
+                    'user_id' =>$this->find_user($today_attendance_database, $all_data[1]), // $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
                     'id_mesin' => $all_data[1],
                     'tanggal' => $time[0],
                     'pulang' => $time[1]
@@ -150,7 +150,7 @@ class Fingerprint {
 
         foreach (array_reverse($today_update_attendance) as $all_today) {
             $exist = false;
-            foreach (array_reverse($today_attendance_database) as $all_database) {
+            foreach (array_reverse(json_decode($today_attendance_database)) as $all_database) {
                 if ($all_today['user_id'] == $all_database['user_id']
                     && $all_today['id_mesin'] == $all_database['id_mesin']
                     && $all_today['tanggal'] == $all_database['tanggal']){

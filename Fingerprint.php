@@ -63,7 +63,7 @@ class Fingerprint {
             }
         } else {
             foreach (json_decode($users) as $user) {
-                if ($user->user_id == $id_mesin) {
+                if ($user->id_mesin === $id_mesin) {
                     $user_id = $user->user_id;
                 }
             }

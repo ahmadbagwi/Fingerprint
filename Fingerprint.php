@@ -52,12 +52,20 @@ class Fingerprint {
         return $response;
     }
 
-    function find_user ($users, $id)
+    function find_user ($users, $id_mesin, $level)
     {
         $user_id = null;
-        foreach (json_decode($users) as $user) {
-            if ($user->user_id == $id) {
-                $user_id = $user->user_id;
+        if ($level === 'pns') {
+            foreach (json_decode($users) as $user) {
+                if (strpos($user->id_mesin, $id_mesin) !== false) {
+                    $user_id = $user->user_id;
+                }
+            }
+        } else {
+            foreach (json_decode($users) as $user) {
+                if ($user->user_id == $id_mesin) {
+                    $user_id = $user->user_id;
+                }
             }
         }
         return $user_id;
@@ -74,13 +82,14 @@ class Fingerprint {
 		return $get_attendance;
     }
 
-    function today_attendance ($date, $ip)
+    function today_attendance ($date, $ip, $level)
     {
         $all_attendance = $this->all_attendance($ip);
         $today_attendance = [];
         $late = $this->http_request($this->base_url.'/'.'api/fingerprint/terlambat');
         $status = '';
         $today_attendance_database = $this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date);
+        $users = $this->http_request($this->base_url.'/'.'api/fingerprint/user');
 
         foreach ($all_attendance as $all_data) {
             $time = explode(" ", $all_data[3]);
@@ -89,7 +98,7 @@ class Fingerprint {
             if ($time[0] == $date) {
                 // push all today data to today_attendance
                 array_push($today_attendance, [
-                    'user_id' => $this->find_user($today_attendance_database, $all_data[1]), // http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
+                    'user_id' => $this->find_user($users, $all_data[1], $level), // http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
                     'id_mesin' => $all_data[1],
                     'tanggal' => $time[0],
                     'datang' => $time[1],
@@ -123,11 +132,13 @@ class Fingerprint {
         return $today_attendance_fix;
     }
 
-    function today_update_attendance ($date, $ip)
+    function today_update_attendance ($date, $ip, $level)
     {
         $all_attendance = $this->all_attendance($ip);
         $today_update_attendance = [];
         $today_attendance_database = $this->http_request($this->base_url.'/'.'api/fingerprint/absen/'.$date);
+        $users = $this->http_request($this->base_url.'/'.'api/fingerprint/user');
+
 
         foreach ($all_attendance as $all_data) {
             $time = explode(" ", $all_data[3]);
@@ -135,7 +146,7 @@ class Fingerprint {
             if ($time[0] == $date) {
                 // push all today data to today_attendance
                 array_push($today_update_attendance, [
-                    'user_id' =>$this->find_user($today_attendance_database, $all_data[1]), // $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
+                    'user_id' =>$this->find_user($users, $all_data[1], $level), // $this->http_request($this->base_url.'/'.'api/fingerprint/profil/id-mesin/'.$all_data[1]),
                     'id_mesin' => $all_data[1],
                     'tanggal' => $time[0],
                     'pulang' => $time[1]

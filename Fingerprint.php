@@ -55,7 +55,7 @@ class Fingerprint {
     function find_user ($users, $id_mesin, $level)
     {
         $user_id = null;
-        if ($level === 'pns') {
+        if ($level == "pns") {
             foreach (json_decode($users) as $user) {
                 if (strpos($user->id_mesin, $id_mesin) !== false) {
                     $user_id = $user->id;
@@ -63,7 +63,7 @@ class Fingerprint {
             }
         } else {
             foreach (json_decode($users) as $user) {
-                if ($user->id_mesin === $id_mesin) {
+                if ($user->id_mesin == $id_mesin) {
                     $user_id = $user->id;
                 }
             }

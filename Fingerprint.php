@@ -58,13 +58,13 @@ class Fingerprint {
         if ($level === 'pns') {
             foreach (json_decode($users) as $user) {
                 if (strpos($user->id_mesin, $id_mesin) !== false) {
-                    $user_id = $user->user_id;
+                    $user_id = $user->id;
                 }
             }
         } else {
             foreach (json_decode($users) as $user) {
                 if ($user->id_mesin === $id_mesin) {
-                    $user_id = $user->user_id;
+                    $user_id = $user->id;
                 }
             }
         }
